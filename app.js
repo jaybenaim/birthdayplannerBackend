@@ -1,13 +1,13 @@
-const createError = require("http-errors");
-const express = require("express");
-const path = require("path");
-const cookieParser = require("cookie-parser");
-const logger = require("morgan");
+const express = require("express"),
+  createError = require("http-errors"),
+  cookieParser = require("cookie-parser"),
+  indexRouter = require("./routes/index"),
+  bodyParser = require("body-parser"),
+  mongoose = require("mongoose"),
+  logger = require("morgan"),
+  app = express();
 
-const indexRouter = require("./routes/index");
-
-const app = express();
-
+require("dotenv").config();
 app.use(logger("dev"));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -19,6 +19,27 @@ app.use("/api", indexRouter);
 app.use((req, res, next) => {
   next(createError(404));
 });
+
+// Mongo - DB
+var options = {
+  useNewUrlParser: true,
+  useFindAndModify: false,
+  useUnifiedTopology: true,
+  useCreateIndex: true
+};
+const uri = process.env.MONGODB_URI;
+mongoose.connect(uri, options, err => {
+  if (err) console.log(err);
+  return console.log("Connected to DB");
+});
+const db = mongoose.connection;
+db.on("error", console.error.bind(console, "MongoDB connection error:"));
+
+app.use(
+  bodyParser.urlencoded({
+    extended: true
+  })
+);
 
 // TODO Web Template Studio: Add your own error handler here.
 if (process.env.NODE_ENV === "production") {
