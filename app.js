@@ -5,7 +5,8 @@ const express = require("express"),
   bodyParser = require("body-parser"),
   mongoose = require("mongoose"),
   logger = require("morgan"),
-  app = express();
+  lists = require("./routes/lists");
+app = express();
 
 require("dotenv").config();
 app.use(logger("dev"));
@@ -14,7 +15,7 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
 app.use("/api", indexRouter);
-
+app.use("/api/lists", lists);
 // catch 404 and forward to error handler
 app.use((req, res, next) => {
   next(createError(404));
