@@ -3,10 +3,11 @@ const express = require("express"),
   cookieParser = require("cookie-parser"),
   indexRouter = require("./routes/index"),
   bodyParser = require("body-parser"),
+  lists = require("./routes/lists"),
   mongoose = require("mongoose"),
   logger = require("morgan"),
-  lists = require("./routes/lists");
-app = express();
+  cors = require("cors"),
+  app = express();
 
 require("dotenv").config();
 app.use(logger("dev"));
@@ -14,6 +15,22 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
+const whitelist = [
+  "https://jaybenaim.github.io",
+  "http://localhost:3000",
+  "http://localhost:5000"
+];
+const corsOptions = {
+  credentials: true,
+  origin: function(origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  }
+};
+app.use(cors(corsOptions));
 app.use("/api", indexRouter);
 app.use("/api/lists", lists);
 // catch 404 and forward to error handler
