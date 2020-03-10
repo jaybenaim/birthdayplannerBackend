@@ -1,1 +1,1 @@
-web: cd server && nodemon app.js
+web:  nodemon server/server.js
